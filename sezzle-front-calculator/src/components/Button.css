@@ -1,0 +1,59 @@
+.calc-btn {
+  font-family: inherit;
+  font-size: 1.25rem;
+  font-weight: 600;
+  border-radius: var(--border-radius);
+  border: 1px solid transparent;
+  padding: 14px 10px;
+  cursor: pointer;
+  outline: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.1s ease, filter 0.15s ease, background-color 0.2s ease;
+  user-select: none;
+  min-height: 52px;
+}
+
+.calc-btn:hover:not(:disabled) {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.calc-btn:active:not(:disabled) {
+  transform: translateY(1px);
+  filter: brightness(0.95);
+}
+
+.calc-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Number button styles */
+.calc-btn-number {
+  background-color: var(--color-btn-number-bg);
+  color: var(--color-btn-number-text);
+  border-color: var(--color-btn-number-border);
+}
+
+/* Operator button styles with metallic finish on typography */
+.calc-btn-operator {
+  background-color: var(--color-btn-op-bg);
+  color: var(--color-btn-op-text);
+  border-color: var(--color-btn-op-border);
+  text-shadow: var(--metallic-finish);
+  font-size: 1.35rem;
+}
+
+/* Utility button styles (C, Backspace, History, etc.) */
+.calc-btn-utility {
+  background-color: var(--color-btn-util-bg);
+  color: var(--color-btn-util-text);
+}
+
+/* Danger variant */
+.calc-btn-danger {
+  background-color: #D32F2F;
+  color: #FFFFFF;
+}

@@ -1,0 +1,42 @@
+.calc-app-card {
+  background-color: var(--color-card-bg);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(var(--border-radius) + 4px);
+  padding: 24px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 12px 32px var(--color-shadow);
+  display: flex;
+  flex-direction: column;
+}
+
+.calc-app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.calc-app-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  letter-spacing: -0.02em;
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 480px) {
+  body {
+    padding: 12px;
+  }
+
+  .calc-app-card {
+    padding: 16px;
+    max-width: 100%;
+  }
+
+  .calc-btn {
+    padding: 12px 6px;
+    font-size: 1.15rem;
+  }
+}

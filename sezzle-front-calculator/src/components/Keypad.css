@@ -1,0 +1,11 @@
+.calc-keypad-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.calc-btn-equals {
+  grid-column: span 4;
+  margin-top: 4px;
+  font-size: 1.5rem;
+}

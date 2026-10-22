@@ -1,0 +1,87 @@
+:root {
+  /* Common typography and sizing */
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --transition-speed: 0.25s;
+  --border-radius: 12px;
+}
+
+/* Light Mode:
+   Main background: champagne cream (#FFF1D9)
+   Number buttons: pure ivory (#FDFCE8)
+   Number text: dark mocha coffee (#5A3A35)
+   Operation buttons: taupe (#3B2A22)
+   Operator symbols: pale gold (#A78E68) with a subtle metallic finish.
+*/
+[data-theme='light'] {
+  --color-bg-main: #FFF1D9;
+  --color-card-bg: #FFFFFF;
+  --color-display-bg: #F8E8CC;
+  --color-text-main: #5A3A35;
+  --color-text-muted: #8B6F68;
+
+  --color-btn-number-bg: #FDFCE8;
+  --color-btn-number-text: #5A3A35;
+  --color-btn-number-border: #E8E5BA;
+
+  --color-btn-op-bg: #3B2A22;
+  --color-btn-op-text: #A78E68;
+  --color-btn-op-border: #2D1F1A;
+
+  --color-btn-util-bg: #E4D3BD;
+  --color-btn-util-text: #3B2A22;
+
+  --color-error-text: #D32F2F;
+  --color-modal-overlay: rgba(59, 42, 34, 0.6);
+  --color-shadow: rgba(90, 58, 53, 0.15);
+
+  --metallic-finish: 0 1px 1px rgba(255, 255, 255, 0.6), 0 -1px 1px rgba(0, 0, 0, 0.3);
+}
+
+/* Dark Mode (default):
+   Main background: deep espresso (#1C1310)
+   Number buttons: dark taupe (#2D1F1A)
+   Number text: pure ivory (#FDFCE8)
+   Operation buttons: pale gold (#A78E68)
+   Operator symbols: deep espresso (#1C1310) with a subtle metallic finish.
+*/
+[data-theme='dark'] {
+  --color-bg-main: #1C1310;
+  --color-card-bg: #261B16;
+  --color-display-bg: #140D0B;
+  --color-text-main: #FDFCE8;
+  --color-text-muted: #A78E68;
+
+  --color-btn-number-bg: #2D1F1A;
+  --color-btn-number-text: #FDFCE8;
+  --color-btn-number-border: #3D2B24;
+
+  --color-btn-op-bg: #A78E68;
+  --color-btn-op-text: #1C1310;
+  --color-btn-op-border: #8F7651;
+
+  --color-btn-util-bg: #3E2D25;
+  --color-btn-util-text: #FDFCE8;
+
+  --color-error-text: #FF6B6B;
+  --color-modal-overlay: rgba(0, 0, 0, 0.75);
+  --color-shadow: rgba(0, 0, 0, 0.5);
+
+  --metallic-finish: 0 1px 1px rgba(255, 255, 255, 0.4), 0 -1px 1px rgba(0, 0, 0, 0.5);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--color-bg-main);
+  color: var(--color-text-main);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color var(--transition-speed), color var(--transition-speed);
+}

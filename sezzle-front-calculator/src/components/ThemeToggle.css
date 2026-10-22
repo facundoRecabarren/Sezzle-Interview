@@ -1,0 +1,12 @@
+.calc-theme-toggle-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+.calc-theme-toggle-btn {
+  font-size: 0.85rem !important;
+  padding: 6px 12px !important;
+  min-height: 36px !important;
+  font-weight: 500 !important;
+}

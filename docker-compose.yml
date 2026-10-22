@@ -1,0 +1,22 @@
+services:
+  backend:
+    build:
+      context: ./sezzle-ms-calculator
+      dockerfile: Dockerfile
+    container_name: sezzle-backend
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./sezzle-front-calculator
+      dockerfile: Dockerfile
+    container_name: sezzle-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
