@@ -22,6 +22,7 @@ Each project has its own Readme with instructions to run and test them.
 ## OpenCode conversation-decisions
 Before starting the development I made a requirements.txt file where I defined all the requirements and needs for the app, including tech stach, color pallete, design decisions, repo structure, constraints and what goes in each version.
 Then I used OpenCode to create and implement a plan based in the requirements file.
+Used Gemini 3.8 Flash in low mode
 
 ### Conversation
 1. Read the requierements.txt and build a plan to implement it. Ask all the necesary question you need
