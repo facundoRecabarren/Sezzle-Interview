@@ -8,6 +8,7 @@
   box-shadow: 0 12px 32px var(--color-shadow);
   display: flex;
   flex-direction: column;
+  margin: auto;
 }
 
 .calc-app-header {
