@@ -1,0 +1,73 @@
+Documento preliminar con los requisitos a tener en cuenta. Lo escribo en inglés para que luego un agente implemente.
+
+## Repository:
+- Create one respository to track the frontend and the backend (one repo two folders).
+- Names: sezzle-front-calculator, sezzle-ms-calculator
+
+## Frontend:
+- Stack: React + Vite (Typescript)
+- UI: 
+    Friendly with mobile support (responsive). 
+    Button to change light/dark background. 
+    Light Mode:
+        Main background: champagne cream (#FFF1D9)
+        Number buttons: pure ivory (#FDFCE8)
+        Number text: dark mocha coffee (#5A3A35) — Ajustado por accesibilidad y contraste.
+        Operation buttons: taupe (#3B2A22)
+        Operator symbols: pale gold (#A78E68) with a subtle metallic finish.
+    Dark Mode (default, stored in localStorage to persist):
+        Main background: deep espresso (#1C1310)
+        Number buttons: dark taupe (#2D1F1A)
+        Number text: pure ivory (#FDFCE8)
+        Operation buttons: pale gold (#A78E68)
+        Operator symbols: deep espresso (#1C1310) with a subtle metallic finish — Recomendado sobre blanco para un look más integrado y sofisticado.
+    High contrast 
+- Project Description: 
+    Calculator application with the following operations:
+        v1 (first) -> Addition, Subtraction, Multiplication, Division, 
+        v2 (not to implement now) -> Exponentiation, Square Root, Percentage
+    App must have an input to write the operations, the input has to:
+        - use a regular expression to validate the input values, ONLY numbers, parenthesis and operators +, -, *, /, ^ (Exponentiation), √, % (percentage)
+        - validate that the operations are well written. Example of bad inputs {input:"23+", error: "operator without right number"}, {input: "(2+3(1*0)", error: "parenthesis missing"}, {input: "(2++3(1**0)", error: "bad written operation"}
+        - Percentage usage: "10+50%=15", taking the 50% of the preceding value 
+        - Square Root usage: "√9+7=10", "√(9+7)=4"
+        - Standard precedence: 2+3*4, first *,/ then +,-
+        - Whitespace not valid
+        - Decimal numbers allowed
+        - Negative numbers allowed
+    There must exist buttons to add numbers/operators and clear the input, the same as the allowed input values. Values can be written with the keyboard too.
+    There must be a button to run the operation, this button has to call the backend endpoint. POST to "v1/calculate"
+    Add a history of sent operations and their result:
+        - Button with a clock icon that opens a modal with the previous operations sent to backend. When clicked the operation has to appear in the input.
+        - Do not store results
+        - Store just for the current session, user sessionStorage
+    For buttons create a generic components to reutilice
+    Error handling: 
+        - show a red message when input invalid or empty
+        - show a modal with an error message for backend errors response: 5xx and 4xx
+    Add tests for (): 
+        - input with different values and not valid ones
+        - testing the send button with empty values and valid operations (expecting calling and not calling the endpoint for invalid cases)
+        - test that the result is shown when input is valid or a modal appears with the backend error
+
+## Backend:
+- Stack: Node.js with Typescript and Express (latest version)
+- Project Description:
+    Expose a POST endpoint "v1/calculate" with an expected body {operation: <input>} and response {operation: <String input>, result: <Number result>, error: <String or null>}
+    use a regular expression to validate the input values, ONLY numbers, parenthesis and operators +, -, *, /, ^, **, √, %
+    validate that the operations are well written. Example of bad inputs {input:"23+", error: "operator without right number"}, {input: "(2+3(1*0)", error: "parenthesis missing"}
+    validate edge cases like zero division
+    Return error messages when necessary (e.g "Error: division by zero", "Error: Input bad written")
+    Add test for:
+        - validate received values and not valid ones
+        - validate error message when dividing by zero
+
+## General
+- Codign constraints: camelCase variables
+- Use conventional commits "fix:...", "feat:...", etc
+- Auth not needed
+
+## Last Step:
+    Build Dockerfile to build images of the backend and frontend
+    Build a docker-compose.yml to run both images (outside both projects)
+    Build a Readme.md for each project with setup instructions including how to run the project and API examples for the backend
