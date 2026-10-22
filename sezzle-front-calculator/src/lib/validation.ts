@@ -1,4 +1,4 @@
-const ALLOWED_CHARS_REGEX = /^[0-9.+\-*/()]+$/;
+const ALLOWED_CHARS_REGEX = /^[0-9.+\-*/()^√%]+$/;
 
 export interface ValidationResult {
   isValid: boolean;
@@ -13,7 +13,7 @@ export function validateInput(expression: string): ValidationResult {
     };
   }
 
-  // 1. Strict regex gate
+  // 1. Strict regex gate: numbers, ., +, -, *, /, (, ), ^, √, %
   if (!ALLOWED_CHARS_REGEX.test(expression)) {
     return {
       isValid: false,
@@ -23,13 +23,16 @@ export function validateInput(expression: string): ValidationResult {
 
   // 2. Structural syntax check for consecutive operators
   if (
-    /\+{2,}|\*{2,}|\/{2,}/.test(expression) ||
-    /[+*\/][+*\/]/.test(expression) ||
-    /-[+*\/]/.test(expression) ||
-    /[+*\/]-{2,}/.test(expression) ||
+    /\+{2,}|\*{2,}|\/{2,}|\^{2,}|\%{2,}|√{2,}/.test(expression) ||
+    /[+*\/^][+*\/^]/.test(expression) ||
+    /-[+*\/^]/.test(expression) ||
+    /[+*\/^]-{2,}/.test(expression) ||
     /-{3,}/.test(expression) ||
     /\+-/.test(expression) ||
-    /-\+/.test(expression)
+    /-\+/.test(expression) ||
+    /%[0-9(√]/.test(expression) || // % followed by number or ( without operator
+    /[+*\/^-]%/.test(expression) || // operator directly before % like +%
+    /\(%/.test(expression) // (%
   ) {
     return {
       isValid: false,
@@ -62,15 +65,15 @@ export function validateInput(expression: string): ValidationResult {
 
   // 4. Operator without right number
   const lastChar = expression[expression.length - 1];
-  if (['+', '-', '*', '/'].includes(lastChar)) {
+  if (['+', '-', '*', '/', '^', '√'].includes(lastChar)) {
     return {
       isValid: false,
       errorMessage: 'operator without right number'
     };
   }
 
-  // 5. Basic checks: leading operator (except -), empty parens (), numbers with multiple dots
-  if (['+', '*', '/'].includes(expression[0])) {
+  // 5. Basic checks: leading operator (except - or √), empty parens (), numbers with multiple dots
+  if (['+', '*', '/', '^', '%'].includes(expression[0])) {
     return {
       isValid: false,
       errorMessage: 'bad written operation'
@@ -84,8 +87,16 @@ export function validateInput(expression: string): ValidationResult {
     };
   }
 
-  // Check implicit multiplication like 3(4) or (2)(3)
-  if (/\d\(|\)\d|\)\(/.test(expression)) {
+  // Check implicit multiplication like 3(4) or (2)(3) or 3√9
+  if (/\d\(|\)\d|\)\(|[0-9)]√/.test(expression)) {
+    return {
+      isValid: false,
+      errorMessage: 'bad written operation'
+    };
+  }
+
+  // Check √ directly followed by operator
+  if (/√[+*\/^)]/.test(expression)) {
     return {
       isValid: false,
       errorMessage: 'bad written operation'
@@ -93,7 +104,7 @@ export function validateInput(expression: string): ValidationResult {
   }
 
   // Numbers with multiple dots (e.g. 1.2.3)
-  const numberTokens = expression.split(/[+\-*/()]/).filter(Boolean);
+  const numberTokens = expression.split(/[+\-*/()^√%]/).filter(Boolean);
   for (const token of numberTokens) {
     const dotCount = (token.match(/\./g) || []).length;
     if (dotCount > 1 || token === '.') {

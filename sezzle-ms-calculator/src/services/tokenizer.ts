@@ -1,4 +1,4 @@
-export type TokenType = 'NUMBER' | 'OPERATOR' | 'LPAREN' | 'RPAREN';
+export type TokenType = 'NUMBER' | 'OPERATOR' | 'LPAREN' | 'RPAREN' | 'PERCENT' | 'SQRT';
 
 export interface Token {
   type: TokenType;
@@ -25,7 +25,19 @@ export function tokenize(rawExpression: string): Token[] {
       continue;
     }
 
-    if (char === '+' || char === '*' || char === '/') {
+    if (char === '√') {
+      tokens.push({ type: 'SQRT', value: '√' });
+      index++;
+      continue;
+    }
+
+    if (char === '%') {
+      tokens.push({ type: 'PERCENT', value: '%' });
+      index++;
+      continue;
+    }
+
+    if (char === '+' || char === '*' || char === '/' || char === '^') {
       tokens.push({ type: 'OPERATOR', value: char });
       index++;
       continue;
@@ -34,7 +46,7 @@ export function tokenize(rawExpression: string): Token[] {
     if (char === '-') {
       // Check if this '-' is unary or binary operator
       const prevToken = tokens.length > 0 ? tokens[tokens.length - 1] : null;
-      const isUnary = !prevToken || prevToken.type === 'OPERATOR' || prevToken.type === 'LPAREN';
+      const isUnary = !prevToken || prevToken.type === 'OPERATOR' || prevToken.type === 'LPAREN' || prevToken.type === 'SQRT';
 
       if (isUnary) {
         // Look ahead to see if followed directly by a number or decimal point

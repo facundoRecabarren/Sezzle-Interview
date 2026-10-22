@@ -1,29 +1,41 @@
 import { CalculationError } from '../errors/calculationError';
 import { tokenize, Token } from '../services/tokenizer';
 
-const ALLOWED_CHARS_REGEX = /^[0-9.+\-*/()]+$/;
+// Regex allowing numbers, ., +, -, *, /, (, ), ^, √, % and strictly NO whitespace
+const ALLOWED_CHARS_REGEX = /^[0-9.+\-*/()^√%]+$/;
 
 export function validateExpression(expression: unknown): string {
   if (typeof expression !== 'string' || expression.trim().length === 0) {
     throw new CalculationError('Error: Input bad written');
   }
 
-  // 1. Strict regex gate: only digits, ., +, -, *, /, (, ) and no whitespace allowed
+  // 1. Strict regex gate: only digits, ., +, -, *, /, (, ), ^, √, %
   if (!ALLOWED_CHARS_REGEX.test(expression)) {
     throw new CalculationError('Error: Input bad written');
   }
 
-  // 2. Structural syntax check for consecutive operators like ++, +*, /*, **, +-, -+, etc.
-  // Note: `--` is allowed for unary minus after binary or unary minus, but `---` is not.
-  // We forbid ++, **, //, and combinations like +*, *+, -+, +-, /*, */, etc.
+  // 2. Structural syntax checks for consecutive operators and bad combinations
+  // In v2:
+  // - Operators: +, *, /, ^
+  // - Unary / prefix: √, -
+  // - Postfix: %
+  // Disallowed:
+  // - ++, **, //, ^^, %%
+  // - combinations like +*, *+, ^*, /+, etc.
+  // - - followed by +, *, /, ^
+  // - operator directly before operator (except a single - for unary negative)
   if (
-    /\+{2,}|\*{2,}|\/{2,}/.test(expression) ||
-    /[+*\/][+*\/]/.test(expression) ||
-    /-[+*\/]/.test(expression) ||
-    /[+*\/]-{2,}/.test(expression) ||
+    /\+{2,}|\*{2,}|\/{2,}|\^{2,}|\%{2,}|√{2,}/.test(expression) ||
+    /[+*\/^][+*\/^]/.test(expression) ||
+    /-[+*\/^]/.test(expression) ||
+    /[+*\/^]-{2,}/.test(expression) ||
     /-{3,}/.test(expression) ||
     /\+-/.test(expression) ||
-    /-\+/.test(expression)
+    /-\+/.test(expression) ||
+    /%[0-9(√]/.test(expression) || // % followed by number, paren or sqrt without operator
+    /[+*\/^-]%/.test(expression) || // operator directly before % like +%
+    /\(%/.test(expression) || // (%
+    /%\)/.test(expression) === false && /%[+\-*/^]/.test(expression) === false && expression[expression.length - 1] !== '%' && /%\)/.test(expression) // % must be followed by operator, RPAREN or end
   ) {
     throw new CalculationError('bad written operation');
   }
@@ -45,9 +57,9 @@ export function validateExpression(expression: unknown): string {
     throw new CalculationError('parenthesis missing');
   }
 
-  // 4. Ending with operator check (e.g. "23+", "2+3*")
+  // 4. Ending with operator or prefix check (e.g. "23+", "2+3*", "√")
   const lastChar = expression[expression.length - 1];
-  if (['+', '-', '*', '/'].includes(lastChar)) {
+  if (['+', '-', '*', '/', '^', '√'].includes(lastChar)) {
     throw new CalculationError('operator without right number');
   }
 
@@ -75,6 +87,24 @@ export function validateExpression(expression: unknown): string {
       }
     }
 
+    // Sqrt token: must have an operand on the right (number, lparen, or another sqrt)
+    if (token.type === 'SQRT') {
+      if (!next || (next.type !== 'NUMBER' && next.type !== 'LPAREN' && next.type !== 'SQRT')) {
+        throw new CalculationError('operator without right number');
+      }
+      // Cannot have number or rparen directly before sqrt without operator (e.g. 3√9)
+      if (prev && (prev.type === 'NUMBER' || prev.type === 'RPAREN' || prev.type === 'PERCENT')) {
+        throw new CalculationError('bad written operation');
+      }
+    }
+
+    // Percent token: must have an operand on the left (number or rparen)
+    if (token.type === 'PERCENT') {
+      if (!prev || (prev.type !== 'NUMBER' && prev.type !== 'RPAREN')) {
+        throw new CalculationError('bad written operation');
+      }
+    }
+
     // Implicit multiplication like 3(4) or (2)(3) or 3(2+1)
     if (token.type === 'NUMBER' && next && next.type === 'LPAREN') {
       throw new CalculationError('bad written operation');
@@ -93,11 +123,11 @@ export function validateExpression(expression: unknown): string {
       if (next && next.type === 'OPERATOR') {
         throw new CalculationError('bad written operation');
       }
-      // Binary operator at the very start (e.g. '+3', '*3', '/3')
+      // Binary operator at the very start (e.g. '+3', '*3', '/3', '^3')
       if (i === 0 && token.value !== '-') {
         throw new CalculationError('bad written operation');
       }
-      // Operator directly after LPAREN (e.g. '(+3)', '(*3)', '(/3)')
+      // Operator directly after LPAREN (e.g. '(+3)', '(*3)', '(/3)', '(^3)')
       if (prev && prev.type === 'LPAREN' && token.value !== '-') {
         throw new CalculationError('bad written operation');
       }

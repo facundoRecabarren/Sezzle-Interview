@@ -17,6 +17,26 @@ describe('POST /v1/calculate', () => {
     });
   });
 
+  it('returns 200 for v2 operations (^, √, %)', async () => {
+    const res1 = await request(app)
+      .post('/v1/calculate')
+      .send({ operation: '2^3' });
+    expect(res1.status).toBe(200);
+    expect(res1.body.result).toBe(8);
+
+    const res2 = await request(app)
+      .post('/v1/calculate')
+      .send({ operation: '√9+7' });
+    expect(res2.status).toBe(200);
+    expect(res2.body.result).toBe(10);
+
+    const res3 = await request(app)
+      .post('/v1/calculate')
+      .send({ operation: '10+50%' });
+    expect(res3.status).toBe(200);
+    expect(res3.body.result).toBe(15);
+  });
+
   it('returns 200 for negative numbers and decimals', async () => {
     const res = await request(app)
       .post('/v1/calculate')
@@ -97,7 +117,7 @@ describe('POST /v1/calculate', () => {
 
     const res3 = await request(app)
       .post('/v1/calculate')
-      .send({ operation: '2^3' });
+      .send({ operation: '2$3' });
     expect(res3.status).toBe(400);
     expect(res3.body.error).toBe('Error: Input bad written');
   });

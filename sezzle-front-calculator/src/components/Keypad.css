@@ -5,7 +5,6 @@
 }
 
 .calc-btn-equals {
-  grid-column: span 4;
-  margin-top: 4px;
+  grid-column: span 1;
   font-size: 1.5rem;
 }

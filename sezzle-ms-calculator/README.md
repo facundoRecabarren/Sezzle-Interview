@@ -6,11 +6,16 @@ Calculator backend microservice built with Node.js, TypeScript, and Express.
 
 - RESTful API exposed at `POST /v1/calculate`.
 - Evaluates arithmetic expressions with standard mathematical operator precedence (`*`, `/` before `+`, `-`).
-- Hand-written safe parser and tokenizer (no `eval` or dynamic code evaluation).
+- **v1 Operations**: Addition (`+`), Subtraction (`-`), Multiplication (`*`), Division (`/`).
+- **v2 Operations**:
+  - Exponentiation (`^`): Right-associative exponentiation (`2^3 = 8`, `2^3^2 = 512`).
+  - Square Root (`√`): Prefix unary with or without parentheses (`√9+7 = 10`, `√(9+7) = 4`).
+  - Percentage (`%`): Context-aware calculation (`10+50% = 15`, `200*10% = 20`).
+- Hand-written safe recursive-descent parser and tokenizer (no `eval` or dynamic code evaluation).
 - Robust validation:
-  - Whitelist character gate (digits, `.` for decimals, `+`, `-`, `*`, `/`, `(`, `)`).
+  - Whitelist character gate (digits, `.` for decimals, `+`, `-`, `*`, `/`, `(`, `)`, `^`, `√`, `%`).
   - Parentheses balance checking.
-  - Well-formedness checks (e.g. `23+`, `2++3`, `3(4)`, `1.2.3`).
+  - Well-formedness checks (e.g. `23+`, `2++3`, `3(4)`, `1.2.3`, `3√9`, `%5`).
   - Division by zero detection.
 - Unit and integration tests with Jest and Supertest.
 
@@ -71,56 +76,34 @@ npm test
 }
 ```
 
-#### Error Response — Invalid Input (400 Bad Request)
-```json
-{
-  "operation": "23+",
-  "result": null,
-  "error": "operator without right number"
-}
-```
-
-#### Error Response — Division by Zero (400 Bad Request)
-```json
-{
-  "operation": "10/0",
-  "result": null,
-  "error": "Error: division by zero"
-}
-```
-
-#### Error Response — Missing Parenthesis (400 Bad Request)
-```json
-{
-  "operation": "(2+3(1*0)",
-  "result": null,
-  "error": "parenthesis missing"
-}
-```
-
-#### Error Response — Bad Written Operation (400 Bad Request)
-```json
-{
-  "operation": "(2++3(1*0)",
-  "result": null,
-  "error": "bad written operation"
-}
-```
-
 #### cURL Examples
 
-**Valid arithmetic:**
+**Basic arithmetic (v1):**
 ```bash
 curl -X POST http://localhost:3000/v1/calculate \
   -H "Content-Type: application/json" \
   -d '{"operation":"(2+3)*4"}'
 ```
 
-**Negative numbers & decimals:**
+**Exponentiation (v2):**
 ```bash
 curl -X POST http://localhost:3000/v1/calculate \
   -H "Content-Type: application/json" \
-  -d '{"operation":"-5.5+2.5*2"}'
+  -d '{"operation":"2^3"}'
+```
+
+**Square Root (v2):**
+```bash
+curl -X POST http://localhost:3000/v1/calculate \
+  -H "Content-Type: application/json" \
+  -d '{"operation":"√(9+7)"}'
+```
+
+**Percentage (v2):**
+```bash
+curl -X POST http://localhost:3000/v1/calculate \
+  -H "Content-Type: application/json" \
+  -d '{"operation":"10+50%"}'
 ```
 
 **Division by zero:**

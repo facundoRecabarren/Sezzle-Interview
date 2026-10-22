@@ -21,7 +21,37 @@ export const Keypad: React.FC<KeypadProps> = ({
 }) => {
   return (
     <div className="calc-keypad-grid">
-      {/* Row 1 */}
+      {/* Row 1: v2 Operations (^, √, %) and History */}
+      <Button
+        label="^"
+        variant="operator"
+        onClick={() => onAppend('^')}
+        ariaLabel="Exponentiation"
+      />
+      <Button
+        label="√"
+        variant="operator"
+        onClick={() => onAppend('√')}
+        ariaLabel="Square root"
+      />
+      <Button
+        label="%"
+        variant="operator"
+        onClick={() => onAppend('%')}
+        ariaLabel="Percentage"
+      />
+      <Button
+        label={
+          <span role="img" aria-label="History clock">
+            🕒
+          </span>
+        }
+        variant="utility"
+        onClick={onOpenHistory}
+        ariaLabel="Open history"
+      />
+
+      {/* Row 2: Clear, Backspace, Parens, Divide */}
       <Button
         label="C"
         variant="utility"
@@ -35,14 +65,10 @@ export const Keypad: React.FC<KeypadProps> = ({
         ariaLabel="Backspace"
       />
       <Button
-        label={
-          <span role="img" aria-label="History clock">
-            🕒
-          </span>
-        }
+        label="("
         variant="utility"
-        onClick={onOpenHistory}
-        ariaLabel="Open history"
+        onClick={() => onAppend('(')}
+        ariaLabel="Open parenthesis"
       />
       <Button
         label="/"
@@ -51,7 +77,7 @@ export const Keypad: React.FC<KeypadProps> = ({
         ariaLabel="Divide"
       />
 
-      {/* Row 2 */}
+      {/* Row 3 */}
       <Button label="7" variant="number" onClick={() => onAppend('7')} />
       <Button label="8" variant="number" onClick={() => onAppend('8')} />
       <Button label="9" variant="number" onClick={() => onAppend('9')} />
@@ -62,7 +88,7 @@ export const Keypad: React.FC<KeypadProps> = ({
         ariaLabel="Multiply"
       />
 
-      {/* Row 3 */}
+      {/* Row 4 */}
       <Button label="4" variant="number" onClick={() => onAppend('4')} />
       <Button label="5" variant="number" onClick={() => onAppend('5')} />
       <Button label="6" variant="number" onClick={() => onAppend('6')} />
@@ -73,7 +99,7 @@ export const Keypad: React.FC<KeypadProps> = ({
         ariaLabel="Subtract"
       />
 
-      {/* Row 4 */}
+      {/* Row 5 */}
       <Button label="1" variant="number" onClick={() => onAppend('1')} />
       <Button label="2" variant="number" onClick={() => onAppend('2')} />
       <Button label="3" variant="number" onClick={() => onAppend('3')} />
@@ -84,13 +110,15 @@ export const Keypad: React.FC<KeypadProps> = ({
         ariaLabel="Add"
       />
 
-      {/* Row 5 */}
-      <Button label="(" variant="utility" onClick={() => onAppend('(')} />
-      <Button label=")" variant="utility" onClick={() => onAppend(')')} />
+      {/* Row 6 */}
+      <Button
+        label=")"
+        variant="utility"
+        onClick={() => onAppend(')')}
+        ariaLabel="Close parenthesis"
+      />
       <Button label="0" variant="number" onClick={() => onAppend('0')} />
       <Button label="." variant="number" onClick={() => onAppend('.')} />
-
-      {/* Row 6: Run equals button span */}
       <Button
         label={isLoading ? '...' : '='}
         variant="operator"
