@@ -32,3 +32,17 @@ Used Gemini 3.8 Flash in low mode
 4. Start the implementation of the plan
 5. Update readme of the frontend with instruccion about running and testing 
 6. now implement v2
+
+## Decisions
+**Why Node.js with TypeScript and Express?**
+  - **Fast setup & familiar ecosystem:** Leverages strong background knowledge for rapid, reliable backend development.
+  - **Type safety:** TypeScript provides compile-time type safety and interface contracts (similar to statically-typed languages like Go), preventing common runtime bugs and enhancing maintainability.
+  - **Minimalist & battle-tested:** Express offers an unopinionated, lightweight framework ideal for focused microservices.
+
+**Why React with Vite?**
+  - **Instant dev server & Fast HMR:** Vite leverages native ES Modules (ESM) in the browser, providing instant server start and lightning-fast Hot Module Replacement (HMR) compared to traditional bundlers like Webpack.
+  - **Optimized production builds:** Uses Rollup under the hood with pre-configured tree-shaking and asset optimization with zero boilerplate overhead.
+
+**Why Nginx as a Reverse Proxy in Docker?**
+  - **Same-Origin (No CORS issues in production):** Nginx serves the React static bundle and proxies API calls (`/v1/calculate`) directly to the backend container, eliminating CORS overhead and extra preflight requests for the client.
+  - **Production-grade performance:** High throughput and low memory footprint for serving static assets.
