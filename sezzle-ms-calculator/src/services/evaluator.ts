@@ -2,6 +2,14 @@ import { CalculationError } from '../errors/calculationError';
 import { tokenize, Token } from './tokenizer';
 
 /**
+ * Normalizes floating point imprecision caused by IEEE 754 arithmetic (e.g. 0.1 + 0.2 = 0.30000000000000004).
+ * Uses 12 decimal places of precision, eliminating epsilon noise while preserving meaningful precision.
+ */
+function normalizePrecision(value: number): number {
+  return parseFloat(value.toPrecision(12));
+}
+
+/**
  * Evaluates an expression with standard operator precedence + v2 operations:
  * Precedence hierarchy:
  * 1. Parentheses `(...)` & Primary numbers
@@ -37,9 +45,9 @@ export function evaluateExpression(expression: string): number {
       // Look ahead to evaluate term; if the term is followed by percent, in +/- it applies to left operand
       const right = parseTermWithContext(result, op);
       if (op === '+') {
-        result = result + right;
+        result = normalizePrecision(result + right);
       } else {
-        result = result - right;
+        result = normalizePrecision(result - right);
       }
     }
 
@@ -47,9 +55,6 @@ export function evaluateExpression(expression: string): number {
   }
 
   function parseTermWithContext(leftContext: number, additiveOp: string): number {
-    // If the immediate power/primary has a percent directly after it without higher-precedence operations,
-    // like 10 + 50%, right should be 10 * 0.5 = 5.
-    // If it's 10 + 50% * 2, standard precedence dictates (50% * 2) = (0.5 * 2) = 1.
     return parseTerm(leftContext, additiveOp);
   }
 
@@ -60,12 +65,12 @@ export function evaluateExpression(expression: string): number {
       const op = consume().value;
       const right = parsePower(); // Multiplicative context: percent is simply value / 100
       if (op === '*') {
-        result = result * right;
+        result = normalizePrecision(result * right);
       } else {
         if (right === 0) {
           throw new CalculationError('Error: division by zero');
         }
-        result = result / right;
+        result = normalizePrecision(result / right);
       }
     }
 
@@ -79,7 +84,7 @@ export function evaluateExpression(expression: string): number {
     if (peek() && peek()!.type === 'OPERATOR' && peek()!.value === '^') {
       consume(); // consume '^'
       const exponent = parsePower(); // right-associative recursion
-      return Math.pow(base, exponent);
+      return normalizePrecision(Math.pow(base, exponent));
     }
 
     return base;
@@ -99,7 +104,7 @@ export function evaluateExpression(expression: string): number {
       if (val < 0) {
         throw new CalculationError('bad written operation'); // Square root of negative number
       }
-      return Math.sqrt(val);
+      return normalizePrecision(Math.sqrt(val));
     }
 
     // Unary minus
@@ -144,16 +149,16 @@ export function evaluateExpression(expression: string): number {
       consume(); // consume '%'
       if (leftAdditiveContext !== undefined && (additiveOp === '+' || additiveOp === '-')) {
         // e.g. "10+50%": takes 50% of the preceding value 10 -> 5
-        return (value / 100) * leftAdditiveContext;
+        return normalizePrecision((value / 100) * leftAdditiveContext);
       }
       // Isolated or multiplicative: 50% = 0.5
-      return value / 100;
+      return normalizePrecision(value / 100);
     }
 
     return value;
   }
 
-  const finalResult = parseExpression();
+  const finalResult = normalizePrecision(parseExpression());
 
   if (cursor < tokens.length) {
     throw new CalculationError('bad written operation');

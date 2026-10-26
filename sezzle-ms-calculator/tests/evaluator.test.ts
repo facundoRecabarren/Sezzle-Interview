@@ -46,9 +46,13 @@ describe('Expression Evaluator', () => {
     expect(evaluateExpression('-(2+3)')).toBe(-5);
   });
 
-  it('handles decimal values', () => {
+  it('handles decimal values and floating point precision issues', () => {
     expect(evaluateExpression('0.5+0.25')).toBe(0.75);
     expect(evaluateExpression('3.14*2')).toBe(6.28);
+    expect(evaluateExpression('0.1+0.2')).toBe(0.3);
+    expect(evaluateExpression('0.3-0.2')).toBe(0.1);
+    expect(evaluateExpression('1.4-0.4')).toBe(1);
+    expect(evaluateExpression('0.7*3')).toBe(2.1);
   });
 
   it('throws division by zero error', () => {
